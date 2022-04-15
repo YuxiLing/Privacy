@@ -57,6 +57,7 @@ def start_extension(foldername):
     extension_folder=crx_folder_name
     path_to_extension = extension_folder+'/'+foldername+'/'
     origin_id=foldername
+    print(origin_id,file=open(finished_file_path,'a'))
     chrome_options = Options()
     chrome_options.add_argument('load-extension=' + path_to_extension)
     chrome_options.add_experimental_option("detach", True)
@@ -85,7 +86,7 @@ def start_extension(foldername):
     extension_id=element6.get_attribute('id')
     print(extension_id)
     print(extension_id,file=open(log_file_path,'a'))
-    print(extension_id,file=open(finished_file_path,'a'))
+    
     # get the initial page of the extension
     # extension_id="***"
     popup_page=get_default_page_path(path_to_extension)
@@ -133,7 +134,7 @@ def start_extension(foldername):
             time.sleep(0.5) # wait the page loading
             print('click on one button')
             print('click on one button',file=open(log_file_path,'a'))
-            save_page(origin_id,driver.execute_script("return document.body.innerHTML"))
+            # save_page(origin_id,driver.execute_script("return document.body.innerHTML"))
             # need to check is there a new tab loaded
             new_page=driver.window_handles
             if len(new_page)>1:
@@ -217,6 +218,13 @@ def mainGUIinterface(folder_list):
 
     mainUserInterfaceWindow.mainloop()
 
+def start_extension_outer(foldername):
+    try:
+        start_extension(foldername)
+    except:
+        print(foldername,"timeout")
+        print(foldername+" timeout",file=open(log_file_path,'a'))
+
 def mainWithoutGUIAuto(folder_list):
     # global current_index
     # current_index = folder_list.index('hcfhemgkgbfonoagglgjcjhaolkacoec')
@@ -227,7 +235,7 @@ def mainWithoutGUIAuto(folder_list):
     print("========start extension analysis========",file=open(log_file_path,'a'))
     '''
     pool=ThreadPool(1)
-    pool.map(start_extension,folder_list)
+    pool.map(start_extension_outer,folder_list)
     pool.close()
     pool.join()
     '''
