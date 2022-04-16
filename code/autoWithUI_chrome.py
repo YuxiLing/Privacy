@@ -25,6 +25,7 @@ current_index = 0
 crx_folder_name='../chrome_ext/install_test'
 log_file_path='../chrome_ext/log.txt'
 finished_file_path='../chrome_ext/finished_list.txt'
+count=0
 
 def handle_extension(extension_driver):
     # do sth like pressing buttons
@@ -57,7 +58,8 @@ def start_extension(foldername):
     extension_folder=crx_folder_name
     path_to_extension = extension_folder+'/'+foldername+'/'
     origin_id=foldername
-    print(origin_id,file=open(finished_file_path,'a'))
+    count+=1
+    print(str(count)+','+origin_id,file=open(finished_file_path,'a'))
     chrome_options = Options()
     chrome_options.add_argument('load-extension=' + path_to_extension)
     chrome_options.add_experimental_option("detach", True)
@@ -239,6 +241,8 @@ def mainWithoutGUIAuto(folder_list):
     pool.close()
     pool.join()
     '''
+    total_ext=len(folder_list)
+    print('total ext to click '+str(total_ext),file=open(finished_file_path,'a'))
     for foldername in folder_list:
         path_to_extension = extension_folder+'/'+foldername+'/'
         try:
