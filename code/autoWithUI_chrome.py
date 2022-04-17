@@ -6,8 +6,8 @@ import random
 import subprocess
 import signal
 import time
-import tkinter
-from tkinter import *
+#import tkinter
+#from tkinter import *
 from bs4 import BeautifulSoup
 from matplotlib.pyplot import close
 from selenium import webdriver
@@ -22,9 +22,9 @@ import time
 DATE="5_19"
 
 current_index = 0
-crx_folder_name='../chrome_ext/install_test'
-log_file_path='../chrome_ext/log.txt'
-finished_file_path='../chrome_ext/finished_list.txt'
+crx_folder_name='./chrome_ext/unzip'
+log_file_path='./chrome_ext/log.txt'
+finished_file_path='./chrome_ext/finished_list.txt'
 count=0
 
 def handle_extension(extension_driver):
@@ -58,7 +58,10 @@ def start_extension(foldername):
     extension_folder=crx_folder_name
     path_to_extension = extension_folder+'/'+foldername+'/'
     origin_id=foldername
+    global count
     count+=1
+    if count<1:
+        return
     print(str(count)+','+origin_id,file=open(finished_file_path,'a'))
     chrome_options = Options()
     chrome_options.add_argument('load-extension=' + path_to_extension)
