@@ -23,9 +23,10 @@ DATE="5_19"
 
 current_index = 0
 crx_folder_name='./chrome_ext/unzip'
-log_file_path='./chrome_ext/log.txt'
-finished_file_path='./chrome_ext/finished_list.txt'
+log_file_path='./chrome_ext/log2.txt'
+finished_file_path='./chrome_ext/finished_list2.txt'
 count=0
+driver=None
 
 def handle_extension(extension_driver):
     # do sth like pressing buttons
@@ -60,17 +61,24 @@ def start_extension(foldername):
     origin_id=foldername
     global count
     count+=1
-    if count<1:
+    if count<=1460:
+        print(str(count)+','+origin_id+',skip',file=open(finished_file_path,'a'))
         return
     print(str(count)+','+origin_id,file=open(finished_file_path,'a'))
     chrome_options = Options()
     chrome_options.add_argument('load-extension=' + path_to_extension)
     chrome_options.add_experimental_option("detach", True)
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation']) 
+    
+    global driver
 
-    driver = webdriver.Chrome(options=chrome_options)
-
-    driver.create_options()
+    try:
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.create_options()
+        
+    except:
+        driver.quit()
+        return
     # open the manager page of the chrome extension
     driver.get("chrome://extensions/")
     driver.switch_to.window(driver.window_handles[0])
@@ -131,6 +139,8 @@ def start_extension(foldername):
     print("number of available buttons",button_count)
     print("number of available buttons",file=open(log_file_path,'a'))
     for i in range(button_count):
+        if i>100:
+            break
         try:
             current_page=driver.current_window_handle
             buttons=driver.find_elements(By.XPATH,"//*")
@@ -247,12 +257,17 @@ def mainWithoutGUIAuto(folder_list):
     total_ext=len(folder_list)
     print('total ext to click '+str(total_ext),file=open(finished_file_path,'a'))
     for foldername in folder_list:
-        path_to_extension = extension_folder+'/'+foldername+'/'
-        try:
-            start_extension(foldername)
-        except:
-            print(foldername,"timeout")
-            print(foldername+" timeout",file=open(log_file_path,'a'))
+        if foldername[-6:]!='_pages':
+            path_to_extension = extension_folder+'/'+foldername+'/'
+            try:
+                start_extension(foldername)
+            except:
+                #driver.quit()
+                print(foldername,"timeout")
+                print(foldername+" timeout",file=open(log_file_path,'a'))
+        else:
+            print('skip a pages file')
+            print('skip a pages file',file=open(log_file_path,'a'))
     
 def init():
     extension_folder = crx_folder_name
